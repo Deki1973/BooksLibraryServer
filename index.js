@@ -6,10 +6,14 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 
 // import kontrolera
-const { getAllBooks, addNewBook,deleteBook, updateBook, getBookByTitle } = require("./controllers/books");
+const {
+  getAllBooks,
+  addNewBook,
+  deleteBook,
+  updateBook,
+  getBookByTitle,
+} = require("./controllers/books");
 const { getSingleBook } = require("./middleware/books");
-
-
 
 const app = express();
 
@@ -51,12 +55,33 @@ app.use((req, res, next) => {
 //app.get("/", controller);
 app.get("/books", getAllBooks);
 app.post("/books/create", addNewBook);
-app.delete("/books/:id", getSingleBook,deleteBook);
-app.patch("/books/:id", getSingleBook,updateBook);
-app.post("/books/find",getBookByTitle);
+app.delete("/books/:id", getSingleBook, deleteBook);
+app.patch("/books/:id", getSingleBook, updateBook);
+app.post("/books/find", getBookByTitle);
 
+// dodato pre pustanja na produkcioni server
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:5000");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://bookslibraryserver-production.up.railway.app"
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
+const PORT=process.env.PORT || 5000;
 
-app.listen(5000, () => {
-  console.log("Server is listening at port 5000...");
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server is listening at port ${PORT}...`);
 });
